@@ -1119,4 +1119,3 @@ onAuthStateChanged(auth, async (user) => {
     allCourses  = [];
   }
 });
-```
