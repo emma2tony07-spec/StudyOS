@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>StudyOS</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ── LOGIN ─────────────────────────────────────────────── -->
+<div id="login-page">
+  <div class="login-bg">
+    <div class="login-bg-circle"></div>
+    <div class="login-bg-circle"></div>
+  </div>
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="login-logo-mark">S</div>
+      <div class="login-logo-text">Study<span>OS</span></div>
+    </div>
+    <h1 class="login-headline">Your academic<br/>command center.</h1>
+    <p class="login-sub">AI-powered studying, scheduling &amp; performance tracking.</p>
+
+    <div class="auth-tabs">
+      <button class="auth-tab active" data-tab="signin">Sign In</button>
+      <button class="auth-tab" data-tab="signup">Create Account</button>
+    </div>
+
+    <div id="auth-error" class="auth-error" style="display:none"></div>
+
+    <!-- Sign In fields -->
+    <div id="signin-fields" style="display:flex;flex-direction:column;gap:1.2rem">
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input type="email" class="form-input" id="signin-email" placeholder="you@email.com" autocomplete="email"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <div class="pwd-group">
+          <input type="password" class="form-input" id="signin-password" placeholder="Your password" autocomplete="current-password"/>
+          <button type="button" class="pwd-visibility" onclick="const i=document.getElementById('signin-password');i.type=i.type==='password'?'text':'password';this.innerHTML=i.type==='password'?'<i class=\'fas fa-eye\'></i>':'<i class=\'fas fa-eye-slash\'></i>'"><i class="fas fa-eye"></i></button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sign Up fields -->
+    <div id="signup-fields" style="display:none;flex-direction:column;gap:1.2rem">
+      <div class="form-group">
+        <label class="form-label">Full Name</label>
+        <input type="text" class="form-input" id="signup-name" placeholder="Your name" autocomplete="name"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input type="email" class="form-input" id="signup-email" placeholder="you@email.com" autocomplete="email"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <div class="pwd-group">
+          <input type="password" class="form-input" id="signup-password" placeholder="Min 6 characters" autocomplete="new-password"/>
+          <button type="button" class="pwd-visibility" onclick="const i=document.getElementById('signup-password');i.type=i.type==='password'?'text':'password';this.innerHTML=i.type==='password'?'<i class=\'fas fa-eye\'></i>':'<i class=\'fas fa-eye-slash\'></i>'"><i class="fas fa-eye"></i></button>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Confirm Password</label>
+        <div class="pwd-group">
+          <input type="password" class="form-input" id="signup-confirm" placeholder="Repeat password" autocomplete="new-password"/>
+          <button type="button" class="pwd-visibility" onclick="const i=document.getElementById('signup-confirm');i.type=i.type==='password'?'text':'password';this.innerHTML=i.type==='password'?'<i class=\'fas fa-eye\'></i>':'<i class=\'fas fa-eye-slash\'></i>'"><i class="fas fa-eye"></i></button>
+        </div>
+      </div>
+    </div>
+
+    <button class="btn-primary" id="signin-btn" style="width:100%;margin-top:2rem;height:48px;font-size:1.5rem">
+      <span class="btn-text">Sign In</span>
+      <span class="btn-loading" style="display:none"><i class="fas fa-spinner fa-spin"></i> Signing in…</span>
+    </button>
+    <button class="btn-primary" id="signup-btn" style="width:100%;margin-top:2rem;height:48px;font-size:1.5rem;display:none">
+      <span class="btn-text">Create Account</span>
+      <span class="btn-loading" style="display:none"><i class="fas fa-spinner fa-spin"></i> Creating account…</span>
+    </button>
+  </div>
+</div>
+
+<!-- ── APP ───────────────────────────────────────────────── -->
+<div id="app">
+  <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-mark">S</div>
+      <div class="sidebar-logo-text">Study<span>OS</span></div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">Main</div>
+      <a class="nav-item active" data-page="dashboard">
+        <i class="fas fa-house"></i> Dashboard
+      </a>
+      <a class="nav-item" data-page="courses">
+        <i class="fas fa-book-open"></i> Courses
+        <span class="nav-badge" id="courses-badge">0</span>
+      </a>
+      <a class="nav-item" data-page="schedule">
+        <i class="fas fa-calendar-days"></i> Schedule
+        <span class="nav-badge" id="schedule-badge">0</span>
+      </a>
+
+      <div class="nav-section-label">Insights</div>
+      <a class="nav-item" data-page="analytics">
+        <i class="fas fa-chart-line"></i> Analytics
+      </a>
+
+      <div class="nav-section-label">Settings</div>
+      <a class="nav-item" id="open-model-settings">
+        <i class="fas fa-robot"></i> AI Models
+      </a>
+      <!-- USAGE BAR -->
+<div class="usage-bar-wrap" id="usage-bar-wrap" style="padding:0 1.2rem 0.8rem"></div>
+    </nav>
+
+    <div class="sidebar-bottom">
+      <div class="theme-toggle" id="theme-toggle">
+        <div class="theme-toggle-label">
+          <i class="fas fa-moon"></i>
+          <span id="theme-label">Dark mode</span>
+        </div>
+        <div class="toggle-switch"></div>
+      </div>
+
+      <div class="user-card" id="user-card">
+        <div class="user-avatar" id="user-avatar">?</div>
+        <div class="user-info">
+          <div class="user-name" id="user-name">Loading…</div>
+          <div class="user-email" id="user-email"></div>
+        </div>
+        <i class="fas fa-ellipsis"></i>
+      </div>
+    </div>
+  </aside>
+
+  <div class="main">
+    <header class="topbar">
+      <div style="display:flex;align-items:center;gap:1.2rem">
+        <button class="hamburger" id="hamburger"><i class="fas fa-bars"></i></button>
+        <div>
+          <div class="topbar-title" id="topbar-title">Dashboard</div>
+          <div class="topbar-subtitle" id="topbar-subtitle">Your study overview</div>
+        </div>
+      </div>
+      <div class="topbar-right">
+        <div class="topbar-btn" id="notif-btn" title="Notifications">
+          <i class="fas fa-bell"></i>
+          <span class="notif-dot" id="notif-dot" style="display:none"></span>
+        </div>
+        <div class="topbar-btn" title="Sign out" id="signout-btn">
+          <i class="fas fa-right-from-bracket"></i>
+        </div>
+      </div>
+    </header>
+
+    <!-- DASHBOARD -->
+    <section class="page active" id="page-dashboard">
+      <div class="page-header">
+        <h1 id="dash-greeting">Good morning, <span class="greeting-name">Student</span> 👋</h1>
+        <p id="dash-date"></p>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon"><i class="fas fa-book-open"></i></div>
+          <div class="stat-value" id="stat-courses">0</div>
+          <div class="stat-label">Active Courses</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon"><i class="fas fa-fire"></i></div>
+          <div class="stat-value" id="stat-streak">0</div>
+          <div class="stat-label">Day Streak</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon"><i class="fas fa-circle-check"></i></div>
+          <div class="stat-value" id="stat-tasks">0</div>
+          <div class="stat-label">Tasks Today</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon"><i class="fas fa-star"></i></div>
+          <div class="stat-value" id="stat-avg">—</div>
+          <div class="stat-label">Avg Quiz Score</div>
+        </div>
+      </div>
+
+      <div class="two-col">
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Today's Tasks</span>
+            <span class="card-action" data-page="schedule">View all →</span>
+          </div>
+          <div class="card-body" id="todays-tasks">
+            <div class="empty-state">
+              <i class="fas fa-calendar-xmark"></i>
+              <p>No tasks today.<br/>Head to Schedule to add some.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Study Streak</span>
+          </div>
+          <div class="card-body">
+            <div class="streak-display">
+              <div class="streak-number" id="streak-big">0</div>
+              <div class="streak-label">days in a row 🔥</div>
+            </div>
+            <div class="streak-days" id="streak-days"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Course Progress</span>
+          <span class="card-action" data-page="courses">All courses →</span>
+        </div>
+        <div class="card-body" id="course-progress-list">
+          <div class="empty-state">
+            <i class="fas fa-book"></i>
+            <p>No courses yet. Add your first course to get started.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- COURSES -->
+    <section class="page" id="page-courses">
+      <div class="page-header" style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:1.6rem;margin-bottom:3.2rem">
+        <div>
+          <h1 style="font-family:'Syne',sans-serif;font-weight:800;font-size:3.2rem;letter-spacing:-0.04em;line-height:1.1;margin-bottom:0.6rem">My Courses</h1>
+          <p style="font-size:1.5rem;color:var(--text-2)">Upload your materials and let AI structure your study content.</p>
+        </div>
+        <button class="btn-primary" id="open-add-course"><i class="fas fa-plus"></i> Add Course</button>
+      </div>
+      <div class="courses-grid" id="courses-grid">
+        <div class="empty-state" style="grid-column:1/-1;padding:6rem 2rem">
+          <i class="fas fa-book-open"></i>
+          <p>No courses yet.<br/>Click <strong>Add Course</strong> to get started.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ADD COURSE MODAL -->
+    <div class="modal-backdrop" id="add-course-backdrop">
+      <div class="modal" id="add-course-modal">
+        <div class="modal-header">
+          <h3 class="modal-title">Add New Course</h3>
+          <button class="modal-close" id="close-add-course"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label class="form-label">Course Name</label>
+            <input type="text" class="form-input" id="course-name-input" placeholder="e.g. Introduction to Biology"/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Course Material</label>
+            <div class="file-drop" id="file-drop-zone">
+              <i class="fas fa-cloud-arrow-up"></i>
+              <p>Drop your file here or <span class="file-browse">browse</span></p>
+              <p class="file-hint">Supports PDF, TXT, DOCX — max 20MB</p>
+              <input type="file" id="course-file-input" accept=".pdf,.txt,.docx" style="display:none"/>
+            </div>
+            <div class="file-selected" id="file-selected" style="display:none">
+              <i class="fas fa-file-lines"></i>
+              <span id="file-selected-name"></span>
+              <button class="file-remove" id="file-remove"><i class="fas fa-times"></i></button>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Color Tag</label>
+            <div class="color-picker" id="color-picker">
+              <div class="color-opt active" data-color="#9B1D20" style="background:#9B1D20"></div>
+              <div class="color-opt" data-color="#4A90D9" style="background:#4A90D9"></div>
+              <div class="color-opt" data-color="#4CAF50" style="background:#4CAF50"></div>
+              <div class="color-opt" data-color="#E8C547" style="background:#E8C547"></div>
+              <div class="color-opt" data-color="#9C27B0" style="background:#9C27B0"></div>
+              <div class="color-opt" data-color="#FF7043" style="background:#FF7043"></div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn-ghost" id="cancel-add-course">Cancel</button>
+          <button class="btn-primary" id="submit-add-course">
+            <span class="btn-text"><i class="fas fa-brain"></i> Analyze &amp; Add</span>
+            <span class="btn-loading" style="display:none"><i class="fas fa-spinner fa-spin"></i> Analyzing…</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- COURSE DETAIL PANEL -->
+    <div class="panel-backdrop" id="course-panel-backdrop">
+      <div class="panel" id="course-panel">
+        <div class="panel-header">
+          <button class="panel-back" id="panel-back"><i class="fas fa-arrow-left"></i></button>
+          <div class="panel-header-info">
+            <h2 class="panel-title" id="panel-course-title">Course</h2>
+            <p class="panel-subtitle" id="panel-course-meta"></p>
+          </div>
+          <button class="panel-close" id="panel-close"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="panel-body">
+          <div id="panel-chapters-section">
+            <div class="panel-section-header">
+              <span class="panel-section-title">Chapters</span>
+              <span class="panel-section-count" id="panel-chapter-count">0</span>
+            </div>
+            <div class="chapters-list" id="panel-chapters-list"></div>
+          </div>
+
+          <div class="chapter-detail" id="chapter-detail" style="display:none">
+            <button class="back-to-chapters" id="back-to-chapters">
+              <i class="fas fa-chevron-left"></i> All Chapters
+            </button>
+            <h3 class="chapter-detail-title" id="chapter-detail-title"></h3>
+
+            <div class="detail-tabs">
+              <button class="detail-tab active" data-tab="summary">Summary</button>
+              <button class="detail-tab" data-tab="quiz">Quiz</button>
+              <button class="detail-tab" data-tab="simplify">Simplify</button>
+              <button class="detail-tab" data-tab="visualize">Visualize</button>
+              <button class="detail-tab" data-tab="readout">Read Out</button>
+            </div>
+
+            <!-- SUMMARY TAB -->
+            <div class="tab-content active" id="tab-summary">
+              <div class="ai-block">
+                <div class="ai-block-header"><i class="fas fa-brain"></i> AI Summary</div>
+                <div class="ai-block-body" id="summary-body">
+                  <div class="ai-loading"><i class="fas fa-spinner fa-spin"></i> Generating summary…</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- QUIZ TAB -->
+            <div class="tab-content" id="tab-quiz">
+              <div class="quiz-container" id="quiz-container">
+                <div class="ai-loading"><i class="fas fa-spinner fa-spin"></i> Generating questions…</div>
+              </div>
+              <div class="answer-section" id="answer-section" style="display:none">
+                <label class="form-label">Your Answer</label>
+                <textarea class="form-textarea" id="answer-textarea" rows="4" placeholder="Type your answer here…"></textarea>
+                <button class="btn-primary" id="submit-answer-btn" style="width:100%;margin-top:1.2rem">
+                  <span class="btn-text"><i class="fas fa-paper-plane"></i> Submit Answer</span>
+                  <span class="btn-loading" style="display:none"><i class="fas fa-spinner fa-spin"></i> Grading…</span>
+                </button>
+                <div class="grade-result" id="grade-result" style="display:none"></div>
+              </div>
+            </div>
+
+            <!-- SIMPLIFY TAB -->
+            <div class="tab-content" id="tab-simplify">
+              <div id="simplify-body">
+                <div class="ai-loading"><i class="fas fa-spinner fa-spin"></i> Click tab to generate…</div>
+              </div>
+            </div>
+
+            <!-- VISUALIZE TAB -->
+            <div class="tab-content" id="tab-visualize">
+              <div id="viz-body">
+                <div class="ai-loading"><i class="fas fa-spinner fa-spin"></i> Click tab to generate…</div>
+              </div>
+            </div>
+
+            <!-- READ OUT TAB -->
+            <div class="tab-content" id="tab-readout">
+              <div id="readout-body"></div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODEL SETTINGS MODAL -->
+    <div class="modal-backdrop" id="model-settings-backdrop">
+      <div class="modal" style="max-width:560px">
+        <div class="modal-header">
+          <h3 class="modal-title"><i class="fas fa-robot" style="color:var(--crimson);margin-right:0.8rem"></i>AI Model Settings</h3>
+          <button class="modal-close" id="close-model-settings"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="modal-body">
+          <p style="font-size:1.3rem;color:var(--text-2);margin-bottom:1.6rem">
+            Assign a different Ollama model to each feature. Changes are saved to <code>studyos_config.json</code>.
+          </p>
+          <div id="model-status"></div>
+          <div id="model-form" style="display:none;flex-direction:column;gap:1.2rem;margin-top:1.6rem"></div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn-ghost" id="cancel-model-settings">Cancel</button>
+          <button class="btn-primary" id="save-model-settings">
+            <i class="fas fa-floppy-disk"></i> Save Settings
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCHEDULE -->
+    <section class="page" id="page-schedule">
+      <div class="page-header" style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:1.6rem;margin-bottom:2.4rem">
+        <div>
+          <h1 style="font-family:'Syne',sans-serif;font-weight:800;font-size:3.2rem;letter-spacing:-0.04em;line-height:1.1;margin-bottom:0.6rem">Schedule</h1>
+          <p style="font-size:1.5rem;color:var(--text-2)">Plan your study sessions and get notified on time.</p>
+        </div>
+        <div style="display:flex;gap:1rem;align-items:center;flex-wrap:wrap">
+          <button class="btn-ghost" id="notif-permission-btn" style="display:none">
+            <i class="fas fa-bell"></i> Enable Notifications
+          </button>
+          <button class="btn-primary" id="open-add-task">
+            <i class="fas fa-plus"></i> Add Task
+          </button>
+        </div>
+      </div>
+
+      <div class="sched-filter-bar">
+        <button class="sched-filter active" data-filter="all">All</button>
+        <button class="sched-filter" data-filter="today">Today</button>
+        <button class="sched-filter" data-filter="upcoming">Upcoming</button>
+        <button class="sched-filter" data-filter="reading">Reading</button>
+        <button class="sched-filter" data-filter="quiz">Quiz</button>
+        <button class="sched-filter" data-filter="assignment">Assignment</button>
+        <button class="sched-filter" data-filter="revision">Revision</button>
+      </div>
+
+      <div id="schedule-list" class="schedule-list">
+        <div class="empty-state" style="padding:6rem 2rem">
+          <i class="fas fa-calendar-plus"></i>
+          <p>No tasks yet.<br/>Click <strong>Add Task</strong> to schedule your first session.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ADD TASK MODAL -->
+    <div class="modal-backdrop" id="add-task-backdrop">
+      <div class="modal" id="add-task-modal">
+        <div class="modal-header">
+          <h3 class="modal-title">Add Study Task</h3>
+          <button class="modal-close" id="close-add-task"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label class="form-label">Task Type</label>
+            <div class="task-type-picker" id="task-type-picker">
+              <div class="task-type-opt active" data-type="reading"><i class="fas fa-book-open"></i> Reading</div>
+              <div class="task-type-opt" data-type="quiz"><i class="fas fa-circle-question"></i> Quiz</div>
+              <div class="task-type-opt" data-type="assignment"><i class="fas fa-pen-to-square"></i> Assignment</div>
+              <div class="task-type-opt" data-type="revision"><i class="fas fa-rotate-left"></i> Revision</div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Task Title</label>
+            <input type="text" class="form-input" id="task-title-input" placeholder="e.g. Read Chapter 3"/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Linked Course <span style="color:var(--text-3);font-weight:400">(optional)</span></label>
+            <select class="form-input form-select" id="task-course-select">
+              <option value="">— No course —</option>
+            </select>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.2rem">
+            <div class="form-group">
+              <label class="form-label">Date</label>
+              <input type="date" class="form-input" id="task-date-input"/>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Time</label>
+              <input type="time" class="form-input" id="task-time-input"/>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Duration</label>
+            <select class="form-input form-select" id="task-duration-input">
+              <option value="15">15 minutes</option>
+              <option value="30" selected>30 minutes</option>
+              <option value="45">45 minutes</option>
+              <option value="60">1 hour</option>
+              <option value="90">1.5 hours</option>
+              <option value="120">2 hours</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Notes <span style="color:var(--text-3);font-weight:400">(optional)</span></label>
+            <textarea class="form-textarea" id="task-notes-input" rows="2" placeholder="Any extra details…"></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn-ghost" id="cancel-add-task">Cancel</button>
+          <button class="btn-primary" id="submit-add-task">
+            <i class="fas fa-calendar-check"></i> Save Task
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ANALYTICS -->
+    <section class="page" id="page-analytics">
+      <div class="page-header" style="margin-bottom:3.2rem">
+        <h1 style="font-family:'Syne',sans-serif;font-weight:800;font-size:3.2rem;letter-spacing:-0.04em;line-height:1.1;margin-bottom:0.6rem">Analytics</h1>
+        <p style="font-size:1.5rem;color:var(--text-2)">Track your performance, streaks and study habits.</p>
+      </div>
+
+      <div class="stats-grid" style="margin-bottom:3.2rem">
+        <div class="stat-card">
+          <div class="stat-icon"><i class="fas fa-star"></i></div>
+          <div class="stat-value" id="an-avg-score">—</div>
+          <div class="stat-label">Avg Quiz Score</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon"><i class="fas fa-circle-check"></i></div>
+          <div class="stat-value" id="an-chapters-done">0</div>
+          <div class="stat-label">Chapters Mastered</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon"><i class="fas fa-pen-to-square"></i></div>
+          <div class="stat-value" id="an-total-attempts">0</div>
+          <div class="stat-label">Total Quiz Attempts</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon"><i class="fas fa-fire"></i></div>
+          <div class="stat-value" id="an-streak">0</div>
+          <div class="stat-label">Current Streak</div>
+        </div>
+      </div>
+
+      <div class="two-col" style="margin-bottom:3.2rem">
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Quiz Scores Over Time</span>
+          </div>
+          <div class="card-body" style="padding:2rem">
+            <canvas id="chart-scores" height="200"></canvas>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Tasks by Type</span>
+          </div>
+          <div class="card-body" style="padding:2rem">
+            <canvas id="chart-tasks" height="200"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Course Breakdown</span>
+        </div>
+        <div class="card-body" id="an-course-table">
+          <div class="empty-state">
+            <i class="fas fa-book"></i>
+            <p>No course data yet. Complete some quizzes to see your breakdown.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script type="module" src="signup.js"></script>
+<script type="module" src="schedule.js"></script>
+<script type="module" src="analytics.js"></script>
+<script type="module" src="app.js"></script>
+</body>
+</html>
