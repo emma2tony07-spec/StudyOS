@@ -1,0 +1,7 @@
+{
+  "analyze": "openai/gpt-oss-120b:free",
+  "summarize": "poolside/laguna-xs.2:free",
+  "grade": "poolside/laguna-xs.2:free",
+  "simplify": "nvidia/nemotron-3-nano-30b-a3b:free",
+  "visualize": "poolside/laguna-xs.2:free"
+}
